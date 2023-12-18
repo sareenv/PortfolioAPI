@@ -6,7 +6,7 @@ The RESTful APi is developed using Node.js and serving AWS DynamoDB as the data 
 - [x] Delete the specific project. 
 - [x] Register a new project.
 - [ ] Post the latest version of the resume.
-- [ ]  Update the work experience.
+- [x]  Update the work experience.
 - [ ] Update the skills and services section. 
 
 ## Project Reuse. 

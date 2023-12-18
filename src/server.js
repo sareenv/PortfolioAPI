@@ -1,7 +1,8 @@
 const express = require('express')
-const path = require('path')
 const bodyParser = require('body-parser')
 const db = require('./dynamo')
+const {listDirectories, getBucketObjects} = require('./AWS/aws-s3')
+const multer = require('multer');
 const { response } = require('express')
 const cors = require('cors')
 const app = express()
@@ -11,6 +12,9 @@ const port = process.env.PORT || 8080
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
+
+const storage = multer.memoryStorage(); 
+const upload = multer({ storage: storage });
 
 app.get('/api/v1/projects', async (_request, response) => {
     try {
@@ -53,7 +57,35 @@ app.delete("/api/v1/deleteProject/:pid", async(request, response) => {
     }
 })
 
+app.get('/api/v1/listDirectories', async (_request, response) => {
+    try {
+        const directories = await listDirectories()
+        const filteredDirectories = directories["Buckets"].filter((bucket) => { return !(bucket.Name.toLowerCase().includes("credentials"))})
+        response.send(filteredDirectories)
+    } catch(error) {
+        response.status(400).send(error)
+    }
+})
+
+app.get('/api/v1/listObjects/:pname', async(request, response) => {
+    try {
+        const projectName = request.params.pname
+        const objects = await getBucketObjects(projectName)
+        response.send(objects)
+    } catch(error) {
+        response.status(400).send(error)
+    }
+})
 
 
+app.post('/api/v1/uploadProject', upload.single('file'), (request, response) => {
+    try {
+        const file = request.file;
+        if (!file) { return res.status(400).send('No file uploaded.'); }
+        response.send()
+    } catch(error) {
+        response.status(400).send(error)
+    }
+})
 
 app.listen(port)

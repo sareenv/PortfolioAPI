@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const { DocumentClient } = require('aws-sdk/clients/dynamodb');
+
 const {v4: uuidv4} = require('uuid')
 const path = require('path')
 require('dotenv').config({path: path.resolve(__dirname, '../config/config.env')})
@@ -12,6 +13,7 @@ AWS.config.update({
 })
 
 const dynamoClient = new DocumentClient()
+
 
 const getProjects = async () => {
     const params = { TableName: "Projects"}
