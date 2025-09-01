@@ -1,26 +1,41 @@
 version: '3.8'
 
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: custom-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    restart: always
+
   api:
     build: .
-    ports:
-      - "8080:8080"
+    # Remove port 8080 exposure to host since Caddy will handle it
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@db:5432/portfolio
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: npm run start
+    restart: always
 
   db:
     image: postgres:16
     restart: always
     environment:
       POSTGRES_DB: portfolio
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: xxx
+      POSTGRES_PASSWORD: xxx
     volumes:
-      - postgres_data:/var/lib/postgresql/data 
+      - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
@@ -30,5 +45,7 @@ services:
       timeout: 5s
       retries: 5
 
-volumes:  # <-- Add this section
+volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:

@@ -1,7 +1,7 @@
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import * as db from './dynamo.js';
+import * as db from './projectsManager.js';
 import multer from 'multer';
 import cors from 'cors';
 
