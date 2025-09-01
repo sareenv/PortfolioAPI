@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   caddy:
     image: caddy:2-alpine
@@ -45,7 +44,17 @@ services:
       timeout: 5s
       retries: 5
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma:/app/data
+    restart: always
+
 volumes:
   postgres_data:
   caddy_data:
   caddy_config:
+  uptime-kuma:
